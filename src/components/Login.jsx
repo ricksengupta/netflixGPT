@@ -1,8 +1,15 @@
 import Header from "./Header";
 import netflixBackground from "../assets/netflixBackground.jpg";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { checkValidData } from "../utils/validate";
+import { auth } from "../utils/firebase";
+import { 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword,
+    updateProfile 
+} from "firebase/auth";
 
-const LoginForm = ({ isSignInForm, toggleSignInForm }) => {
+const LoginForm = ({ isSignInForm, toggleSignInForm, email, password, handleButtonClick, fullName }) => {
 	return (
 		// FORM WRAPPER: Dark, Centered, and Padded
 		<form className="bg-black/70 w-full max-w-md mx-auto p-12 rounded-lg shadow-lg z-10">
@@ -13,8 +20,8 @@ const LoginForm = ({ isSignInForm, toggleSignInForm }) => {
 			{!isSignInForm && (
 				<input
 					type="text"
+					ref={fullName}
 					placeholder="Full Name"
-					// 👇 Added consistent bottom margin: mb-6
 					className="p-4 mb-6 w-full bg-black/80 rounded-md text-white border-white border-1"
 				/>
 			)}
@@ -23,7 +30,8 @@ const LoginForm = ({ isSignInForm, toggleSignInForm }) => {
 			<input
 				type="email"
 				placeholder="Email"
-				// 👇 Changed my-4 to consistent bottom margin: mb-6
+				ref={email}
+				
 				className="p-4 mb-6 w-full bg-black/80 rounded-md text-white border-white border-1"
 			/>
 
@@ -31,11 +39,15 @@ const LoginForm = ({ isSignInForm, toggleSignInForm }) => {
 			<input
 				type="password"
 				placeholder="Password"
-				// 👇 Changed my-4 to consistent bottom margin: mb-6 (or mb-0 if the next element is the button)
+				ref={password}
+				
 				className="p-4 mb-6 w-full bg-black/80 rounded-md text-white border-white border-1"
 			/>
 			{/* SIGN IN BUTTON */}
-			<button className="p-4 my-8 bg-red-600 w-full rounded-md text-white font-bold cursor-pointer">
+			<button
+				className="p-4 my-8 bg-red-600 w-full rounded-md text-white font-bold cursor-pointer"
+				onClick={handleButtonClick}
+			>
 				{isSignInForm ? "Sign In" : "Sign Up"}
 			</button>
 
@@ -67,6 +79,49 @@ const LoginForm = ({ isSignInForm, toggleSignInForm }) => {
 const Login = () => {
 	const [isSignInForm, setIsSignInForm] = useState(true);
 
+	const email = useRef(null);
+	const password = useRef(null);
+	const fullName = useRef(null);
+
+	const handleButtonClick = async(e) => {
+		e.preventDefault();
+
+		const emailValue = email.current.value;
+		const passwordValue = password.current.value;
+		const fullNameValue = fullName.current?.value?.trim();
+
+		const validation = checkValidData(emailValue, passwordValue, isSignInForm ? null : fullNameValue);
+
+		if(!validation.valid) {
+			
+			alert(validation.message);
+			return;
+		}
+
+
+		if (!isSignInForm) {
+			try {
+            const userCred = await createUserWithEmailAndPassword(auth, emailValue, passwordValue);
+            
+            await updateProfile(userCred.user, {
+                displayName: fullNameValue
+            });
+
+            console.log("Signed up:", userCred.user);
+        } catch (error) {
+            alert(error.message);
+        }
+		}
+		else{
+			try {
+            const userCred = await signInWithEmailAndPassword(auth, emailValue, passwordValue);
+            console.log("Logged in:", userCred.user);
+        } catch (error) {
+            alert(error.message);
+        }
+		}
+	};
+
 	const toggleSignInForm = () => {
 		setIsSignInForm(!isSignInForm);
 	};
@@ -83,7 +138,15 @@ const Login = () => {
 			<Header />
 
 			<div className="flex justify-center items-center min-h-screen pt-24 md:pt-0">
-				<LoginForm isSignInForm={isSignInForm} toggleSignInForm={toggleSignInForm} />
+				<LoginForm
+					isSignInForm={isSignInForm}
+					toggleSignInForm={toggleSignInForm}
+					checkValidData={checkValidData}
+					email={email}
+					password={password}
+					handleButtonClick={handleButtonClick}
+					fullName={fullName}
+				/>
 			</div>
 		</div>
 	);
