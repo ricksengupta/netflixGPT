@@ -3,15 +3,11 @@ import netflixBackground from "../assets/netflixBackground.jpg";
 import { useRef, useState } from "react";
 import { checkValidData } from "../utils/validate";
 import { auth } from "../utils/firebase";
-import { 
-    createUserWithEmailAndPassword, 
-    signInWithEmailAndPassword,
-    updateProfile 
-} from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = ({ isSignInForm, toggleSignInForm, email, password, handleButtonClick, fullName }) => {
 	return (
-		// FORM WRAPPER: Dark, Centered, and Padded
 		<form className="bg-black/70 w-full max-w-md mx-auto p-12 rounded-lg shadow-lg z-10">
 			<h1 className="text-white text-3xl font-bold mb-8">{isSignInForm ? "Sign In" : "Sign Up"}</h1>
 
@@ -31,7 +27,6 @@ const LoginForm = ({ isSignInForm, toggleSignInForm, email, password, handleButt
 				type="email"
 				placeholder="Email"
 				ref={email}
-				
 				className="p-4 mb-6 w-full bg-black/80 rounded-md text-white border-white border-1"
 			/>
 
@@ -40,7 +35,6 @@ const LoginForm = ({ isSignInForm, toggleSignInForm, email, password, handleButt
 				type="password"
 				placeholder="Password"
 				ref={password}
-				
 				className="p-4 mb-6 w-full bg-black/80 rounded-md text-white border-white border-1"
 			/>
 			{/* SIGN IN BUTTON */}
@@ -83,7 +77,8 @@ const Login = () => {
 	const password = useRef(null);
 	const fullName = useRef(null);
 
-	const handleButtonClick = async(e) => {
+
+	const handleButtonClick = async (e) => {
 		e.preventDefault();
 
 		const emailValue = email.current.value;
@@ -92,33 +87,30 @@ const Login = () => {
 
 		const validation = checkValidData(emailValue, passwordValue, isSignInForm ? null : fullNameValue);
 
-		if(!validation.valid) {
-			
+		if (!validation.valid) {
 			alert(validation.message);
 			return;
 		}
 
-
 		if (!isSignInForm) {
 			try {
-            const userCred = await createUserWithEmailAndPassword(auth, emailValue, passwordValue);
-            
-            await updateProfile(userCred.user, {
-                displayName: fullNameValue
-            });
+				const userCred = await createUserWithEmailAndPassword(auth, emailValue, passwordValue);
 
-            console.log("Signed up:", userCred.user);
-        } catch (error) {
-            alert(error.message);
-        }
-		}
-		else{
+				await updateProfile(userCred.user, {
+					displayName: fullNameValue,
+				});
+
+				console.log("Signed up:", userCred.user);
+			} catch (error) {
+				alert(error.message);
+			}
+		} else {
 			try {
-            const userCred = await signInWithEmailAndPassword(auth, emailValue, passwordValue);
-            console.log("Logged in:", userCred.user);
-        } catch (error) {
-            alert(error.message);
-        }
+				const userCred = await signInWithEmailAndPassword(auth, emailValue, passwordValue);
+				console.log("Logged in:", userCred.user);
+			} catch (error) {
+				alert(error.message);
+			}
 		}
 	};
 
