@@ -1,0 +1,21 @@
+/* In your index.css or global.css */
+/* --- Touch Scroll Fix --- */
+.touch-scroll-fix {
+    /* 1. Enables native, smooth, inertial scrolling on touch devices (especially iOS) */
+    -webkit-overflow-scrolling: touch; 
+    
+    /* 2. Allows vertical scrolling but prevents interfering touch actions like pinch-to-zoom */
+    /* This can help isolate the horizontal drag */
+    touch-action: pan-y; 
+}
+
+/* --- Scrollbar Hiding (Recap) --- */
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}

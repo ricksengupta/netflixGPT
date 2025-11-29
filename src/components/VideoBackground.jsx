@@ -7,12 +7,12 @@ const VideoBackground = ({ movieId }) => {
 	const dispatch = useDispatch();
 
 	const trailerVideo = useSelector((store) => store.movies.movieTrailer);
+    console.log("Trailer Video from Redux Store:", trailerVideo);
 
 	const getMovieVideos = async () => {
 		const data = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?language=en-US`, options);
 		const json = await data.json();
 
-		console.log("Movie Videos:", json);
 
 		const trailers = json.results.filter((video) => video.type === "Trailer");
 		const trailer = trailers[0];
@@ -24,7 +24,6 @@ const VideoBackground = ({ movieId }) => {
 		getMovieVideos();
 	}, []);
 
-	// 🛑 SAFETY CHECK — do not render iframe until trailer is loaded
 	if (!trailerVideo) return <h2 className="text-white">Loading Trailer...</h2>;
 
 	return (
