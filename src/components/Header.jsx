@@ -36,14 +36,12 @@ const Header = () => {
         displayName : displayName,
     }));
     navigate("/browse");
-    // User is signed in, see docs for a list of available properties
-    // https://firebase.google.com/docs/reference/js/auth.user    // ...
+    
   } else {
 
     dispatch(removeUser());
     navigate("/");
-    // User is signed out
-    // ...
+  
   }
 
   return () =>unsubscribe()

@@ -1,25 +1,26 @@
-import Header from "./Header";
-import { searchMovies, getMovieDetails } from "../utils/omdb";
-import { useState, useEffect } from "react";
-const { useDispatch, useSelector } = require("react-redux");
+import Header from "./Header.jsx";
+import { useEffect } from "react";
+import { getNowPlayingMovies } from "../utils/tmdbApi.js";
+import { useDispatch, useSelector } from "react-redux";
+import { setNowPlaying } from "../store/movieSlice.js";
+import MainContainer from "./MainContainer.jsx";
 
 const Browse = () => {
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const fetchData = async () => {
-      const results = await searchMovies();  
-      console.log(results);  
-    };
+    async function loadData() {
+      const data = await getNowPlayingMovies();
+      dispatch(setNowPlaying(data.results));
+    }
 
-    fetchData();
+    loadData();
   }, []);
-
 
   return (
     <div>
       <Header />
       <MainContainer />
-      <SecondaryContainer />
     </div>
   );
 };
