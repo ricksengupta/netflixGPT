@@ -1,0 +1,31 @@
+const lang = {
+    en:{
+        search: "Search",
+        gptSearch: "What would you like to watch today?"
+    },
+    hindi:{
+        search: "खोज",
+        gptSearch: "आज आप क्या देखना चाहेंगे?"
+    },
+    spanish:{
+        search: "Buscar",
+        gptSearch: "¿Qué te gustaría ver hoy?"
+    }
+};
+
+export const SupportedLanguages = [{
+    identifier:"en",
+    name:"English"
+},
+{
+    identifier:"hindi",
+    name:"Hindi"
+},
+{
+    identifier:"spanish",
+    name:"Spanish"
+}
+];
+
+export default lang;
+
